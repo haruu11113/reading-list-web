@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  app:
+    container_name: reading
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      args:
+        WORKDIR: home/app
+    ports:
+      - 3030:3000
+    tty: true
+    volumes:
+      - ./app:/home/app

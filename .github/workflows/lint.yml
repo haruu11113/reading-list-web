@@ -1,0 +1,36 @@
+name: ESLint and Prettier Auto Fix
+on:
+  # push:
+  #   branches:
+  #     - '*'
+  pull_request:
+    branches:
+      - dev
+      - release
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install
+        run: cd app && npm install
+      - name: Run Fix
+        run: cd app && npm run fix
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply Prettier Change
